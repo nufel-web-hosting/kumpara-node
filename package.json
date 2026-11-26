@@ -1,0 +1,51 @@
+{
+  "name": "kumpara",
+  "version": "0.1.0",
+  "description": "The official Node.js SDK for Kumpara, the Norwegian invoicing API: create and send invoices with KID, PDF and webhooks from your own code.",
+  "keywords": ["kumpara", "invoice", "invoicing", "faktura", "kid", "norway", "webhooks", "sdk", "api-client"],
+  "homepage": "https://kumpara.no/docs",
+  "bugs": {
+    "url": "https://github.com/nufel-web-hosting/kumpara-node/issues",
+    "email": "support@kumpara.no"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nufel-web-hosting/kumpara-node.git"
+  },
+  "license": "MIT",
+  "author": "Nufel Web Hosting (https://kumpara.no)",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node scripts/cjs-package.cjs",
+    "test": "npm run build && node --test test/client.test.mjs test/webhook.test.mjs test/require.test.cjs",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.6.0"
+  }
+}
