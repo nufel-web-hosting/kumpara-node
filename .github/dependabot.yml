@@ -8,3 +8,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    ignore:
+      # The types must match the oldest Node.js the SDK supports (engines: >=20), not the newest
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # A new TypeScript major is tested and moved to by hand
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
