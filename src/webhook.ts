@@ -20,9 +20,9 @@ export interface VerifyOptions {
  *
  * @throws SignatureError when the signature is missing, wrong or too old, or the body is not an event
  */
-export function constructEvent(payload: string | Buffer, signatureHeader: string | string[] | null | undefined,
+export function constructEvent(payload: string | Uint8Array, signatureHeader: string | string[] | null | undefined,
                                secret: string, options: VerifyOptions = {}): WebhookEvent {
-  const body = typeof payload === 'string' ? payload : payload.toString('utf8');
+  const body = typeof payload === 'string' ? payload : Buffer.from(payload).toString('utf8');
   verify(body, signatureHeader, secret, options);
 
   let event: unknown;
@@ -39,7 +39,7 @@ export function constructEvent(payload: string | Buffer, signatureHeader: string
 }
 
 /** @throws SignatureError */
-export function verify(payload: string | Buffer, signatureHeader: string | string[] | null | undefined,
+export function verify(payload: string | Uint8Array, signatureHeader: string | string[] | null | undefined,
                        secret: string, options: VerifyOptions = {}): void {
   if (!secret) {
     throw new SignatureError('No webhook secret. Set KUMPARA_WEBHOOK_SECRET (whsec_...).');
@@ -66,7 +66,7 @@ export function verify(payload: string | Buffer, signatureHeader: string | strin
     throw new SignatureError('The webhook signature is too old.');
   }
 
-  const body = typeof payload === 'string' ? payload : payload.toString('utf8');
+  const body = typeof payload === 'string' ? payload : Buffer.from(payload).toString('utf8');
   const expected = Buffer.from(createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex'));
   for (const signature of signatures) {
     const given = Buffer.from(signature);

@@ -105,8 +105,8 @@ export class Invoices {
     return this.client.request('GET', `/invoices/${id}/pdf`);
   }
 
-  /** The PDF file itself, ready to save or send. */
-  async pdfBuffer(id: number): Promise<Buffer> {
+  /** The PDF file itself, ready to save or send (a Buffer in Node.js; typed as Uint8Array). */
+  async pdfBuffer(id: number): Promise<Uint8Array> {
     const pdf = await this.pdf(id);
     return Buffer.from(pdf.base64 ?? '', 'base64');
   }

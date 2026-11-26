@@ -1,5 +1,5 @@
 export { Kumpara, VERSION, DEFAULT_BASE_URL } from './client.js';
-export type { KumparaOptions } from './client.js';
+export type { KumparaOptions, FetchLike, FetchResponseLike } from './client.js';
 export { Customers, Products, Invoices, Tenants } from './resources.js';
 export { Webhook, constructEvent, verify, DEFAULT_TOLERANCE } from './webhook.js';
 export type { VerifyOptions } from './webhook.js';

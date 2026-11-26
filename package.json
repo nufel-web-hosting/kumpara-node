@@ -1,6 +1,6 @@
 {
   "name": "kumpara",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The official Node.js SDK for Kumpara, the Norwegian invoicing API: create and send invoices with KID, PDF and webhooks from your own code.",
   "keywords": ["kumpara", "invoice", "invoicing", "faktura", "kid", "norway", "webhooks", "sdk", "api-client"],
   "homepage": "https://kumpara.no/docs",
