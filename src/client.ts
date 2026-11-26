@@ -2,10 +2,22 @@ import { ConnectionError, errorFromResponse } from './errors.js';
 import { Customers, Invoices, Products, Tenants } from './resources.js';
 import type { KumparaObject } from './types.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 export const DEFAULT_BASE_URL = 'https://api.kumpara.no/v1';
 
 const MAX_RETRY_WAIT = 10; // seconds; a longer Retry-After is thrown to the caller
+
+/** What the client needs from an HTTP answer: the global fetch's Response has all of it. */
+export interface FetchResponseLike {
+  ok: boolean;
+  status: number;
+  headers: { get(name: string): string | null };
+  text(): Promise<string>;
+}
+
+/** A fetch function: the global one, or your own (tests, a proxy). Typed loosely so no DOM or Node types are needed. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FetchLike = (url: string, init: any) => Promise<FetchResponseLike>;
 
 export interface KumparaOptions {
   /** kp_test_... or kp_live_...; default: the KUMPARA_API_KEY environment variable. */
@@ -18,7 +30,7 @@ export interface KumparaOptions {
   /** Extra attempts when it is safe to repeat. Default 2. */
   maxRetries?: number;
   /** Your own fetch (for tests or a proxy). Default: the global fetch. */
-  fetch?: typeof fetch;
+  fetch?: FetchLike;
   /** @internal How to wait between attempts (tests). */
   sleep?: (ms: number) => Promise<void>;
 }
@@ -43,7 +55,7 @@ export class Kumpara {
   readonly #baseUrl: string;
   readonly #timeout: number;
   readonly #maxRetries: number;
-  readonly #fetch: typeof fetch;
+  readonly #fetch: FetchLike;
   readonly #sleep: (ms: number) => Promise<void>;
   readonly #options: KumparaOptions;
 
@@ -52,7 +64,7 @@ export class Kumpara {
     if (apiKey === '') {
       throw new TypeError('No API key. Pass { apiKey }, or set the KUMPARA_API_KEY environment variable.');
     }
-    const fetchFn = options.fetch ?? globalThis.fetch;
+    const fetchFn: FetchLike | undefined = options.fetch ?? (globalThis.fetch as FetchLike | undefined);
     if (typeof fetchFn !== 'function') {
       throw new TypeError('No fetch available. Use Node.js 20 or newer, or pass { fetch }.');
     }
@@ -125,9 +137,9 @@ export class Kumpara {
     const repeatable = method === 'GET' || sent.externalRef !== undefined || sent.ref !== undefined;
 
     for (let attempt = 0; ; attempt++) {
-      let response: Response;
+      let response: FetchResponseLike;
       try {
-        response = await this.#fetch(url, {
+        response = await this.#fetch(url.toString(), {
           method,
           headers,
           body: payload,

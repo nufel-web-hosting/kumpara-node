@@ -2,7 +2,11 @@
 
 All notable changes to this package. Versions follow [Semantic Versioning](https://semver.org).
 
-## [0.1.0] - unreleased
+## [0.1.1] - 2026-11-26
+
+- TypeScript: the public types no longer need `@types/node` (`Uint8Array` in place of `Buffer`; at runtime it is still a Buffer)
+
+## [0.1.0] - 2026-11-26
 
 First release.
 
